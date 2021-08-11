@@ -11,6 +11,7 @@
             </div>
             <ul class="list">
                 <li
+                    @click="getMessages(user.id)"
                     v-for="(user, index) in users"
                     :key="user.id"
                     class="clearfix"
@@ -26,7 +27,11 @@
                     <div class="about">
                         <div class="name">{{ $_.upperFirst(user.name) }}</div>
                         <div class="status">
-                            <i class="fa fa-circle online"></i> online
+                            <i
+                                class="fa fa-circle"
+                                :class="index % 2 === 0 ? 'online' : 'offline'"
+                            ></i>
+                            online
                         </div>
                     </div>
                 </li>
@@ -49,6 +54,7 @@
             <!-- end chat-header -->
 
             <div class="chat-history">
+                <pre>{{ messages }}</pre>
                 <ul>
                     <li class="clearfix">
                         <div class="message-data align-right">
@@ -170,7 +176,8 @@ export default {
 
     computed: {
         ...mapGetters({
-            users: "user/getUsers"
+            users: "user/getUsers",
+            messages: "user/getMessages"
         })
     },
 
@@ -180,14 +187,11 @@ export default {
 
     methods: {
         getUsers() {
-            axios
-                .get("users")
-                .then(res => {
-                    this.$store.dispatch("user/getUsers");
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            this.$store.dispatch("user/getUsers");
+        },
+
+        getMessages(userId) {
+            this.$store.dispatch("user/getMessages", userId);
         }
     }
 };

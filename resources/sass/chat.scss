@@ -52,18 +52,25 @@ $gray: #92959E;
     }
 
     ul {
-        padding: 20px;
+        padding: 20px 0;
         height: 770px;
         overflow: auto;
 
         li {
-            padding-bottom: 20px;
+            margin-bottom: 8px;
             list-style: none;
+            cursor: pointer;
+            padding: 4px 0 4px 20px;
+        }
+
+        li:hover {
+            background: #6A6C75;
         }
     }
 
     img {
         float: left;
+        border-radius: 100%;
     }
 
     .about {
@@ -100,6 +107,7 @@ $gray: #92959E;
 
         img {
             float: left;
+            border-radius: 100%;
         }
 
         .chat-about {

@@ -18,7 +18,7 @@ class CreateMessagesTable extends Migration
             $table->bigInteger('from')->comment('own id');
             $table->bigInteger('to')->comment('other id');
             $table->text('message');
-            $table->boolean('type');
+            $table->boolean('type')->nullable();
             $table->timestamps();
         });
     }

@@ -16,7 +16,7 @@ class ChatController extends Controller
 
     public function getUserList(): \Illuminate\Http\JsonResponse
     {
-        $users = User::latest()->get();
+        $users = User::latest()->where('id', '!=', auth()->id())->get();
 
         return response()->json($users);
     }
@@ -26,9 +26,18 @@ class ChatController extends Controller
         return view('chat');
     }
 
-    public function fetchMessages()
+    public function getMessages($user_id): \Illuminate\Http\JsonResponse
     {
-        return Message::with('user')->get();
+        $messages = Message::query()
+            ->where(function ($q) use ($user_id) {
+                $q->where('from', auth()->id())
+                    ->where('to', $user_id);
+            })->orWhere(function ($q) use ($user_id) {
+                $q->where('to', auth()->id())
+                    ->where('from', $user_id);
+            })->get();
+
+        return response()->json($messages);
     }
 
     public function sendMessages(Request $request): array
