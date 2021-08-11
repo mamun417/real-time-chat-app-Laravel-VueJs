@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageSentEvent;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -11,6 +12,13 @@ class ChatController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function getUserList(): \Illuminate\Http\JsonResponse
+    {
+        $users = User::latest()->get();
+
+        return response()->json($users);
     }
 
     public function index()
