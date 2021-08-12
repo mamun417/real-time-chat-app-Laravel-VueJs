@@ -15,6 +15,11 @@
                     v-for="(user, index) in users"
                     :key="user.id"
                     class="clearfix"
+                    :class="
+                        userMessages.user && userMessages.user.id === user.id
+                            ? 'active-chat'
+                            : ''
+                    "
                 >
                     <img
                         :src="
@@ -38,7 +43,7 @@
             </ul>
         </div>
 
-        <div class="chat">
+        <div class="chat" v-if="userMessages.user">
             <div class="chat-header clearfix">
                 <img
                     src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg"
@@ -46,7 +51,9 @@
                 />
 
                 <div class="chat-about">
-                    <div class="chat-with">Chat with Vincent Porter</div>
+                    <div class="chat-with">
+                        Chat with {{ userMessages.user.name }}
+                    </div>
                     <div class="chat-num-messages">already 1 902 messages</div>
                 </div>
                 <i class="fa fa-star"></i>
@@ -54,92 +61,52 @@
             <!-- end chat-header -->
 
             <div class="chat-history">
-                <pre>{{ messages }}</pre>
-                <ul>
-                    <li class="clearfix">
-                        <div class="message-data align-right">
-                            <span class="message-data-time"
-                                >10:10 AM, Today</span
-                            >
+                <ul v-if="userMessages.messages.length">
+                    <li
+                        v-for="(message, index) in userMessages.messages"
+                        :key="index"
+                        class="clearfix"
+                    >
+                        <div
+                            v-if="userMessages.user.id !== message.user.id"
+                            class="message-data align-right"
+                        >
+                            <span class="message-data-time">
+                                {{ $dateFormat(message.created_at) }}
+                            </span>
                             &nbsp; &nbsp;
-                            <span class="message-data-name">Olia</span>
+                            <span class="message-data-name">
+                                {{ message.user.name }}
+                            </span>
                             <i class="fa fa-circle me"></i>
                         </div>
-                        <div class="message other-message float-right">
-                            Hi Vincent, how are you? How is the project coming
-                            along?
-                        </div>
-                    </li>
 
-                    <li>
-                        <div class="message-data">
-                            <span class="message-data-name"
-                                ><i class="fa fa-circle online"></i>
-                                Vincent</span
-                            >
-                            <span class="message-data-time"
-                                >10:12 AM, Today</span
-                            >
+                        <div v-else class="message-data">
+                            <span class="message-data-name">
+                                <i class="fa fa-circle online"></i>
+                                {{ message.user.name }}
+                            </span>
+                            <span class="message-data-time">
+                                {{ $dateFormat(message.created_at) }}
+                            </span>
                         </div>
-                        <div class="message my-message">
-                            Are we meeting today? Project has been already
-                            finished and I have results to show you.
-                        </div>
-                    </li>
 
-                    <li class="clearfix">
-                        <div class="message-data align-right">
-                            <span class="message-data-time"
-                                >10:14 AM, Today</span
-                            >
-                            &nbsp; &nbsp;
-                            <span class="message-data-name">Olia</span>
-                            <i class="fa fa-circle me"></i>
+                        <div
+                            class="message"
+                            :class="
+                                userMessages.user.id === message.user.id
+                                    ? 'my-message'
+                                    : 'other-message float-right'
+                            "
+                        >
+                            {{ message.message }}
                         </div>
-                        <div class="message other-message float-right">
-                            Well I am not sure. The rest of the team is not here
-                            yet. Maybe in an hour or so? Have you faced any
-                            problems at the last phase of the project?
-                        </div>
-                    </li>
-
-                    <li>
-                        <div class="message-data">
-                            <span class="message-data-name"
-                                ><i class="fa fa-circle online"></i>
-                                Vincent</span
-                            >
-                            <span class="message-data-time"
-                                >10:20 AM, Today</span
-                            >
-                        </div>
-                        <div class="message my-message">
-                            Actually everything was fine. I'm very excited to
-                            show this to our team.
-                        </div>
-                    </li>
-
-                    <li>
-                        <div class="message-data">
-                            <span class="message-data-name"
-                                ><i class="fa fa-circle online"></i>
-                                Vincent</span
-                            >
-                            <span class="message-data-time"
-                                >10:31 AM, Today</span
-                            >
-                        </div>
-                        <i class="fa fa-circle online"></i>
-                        <i
-                            class="fa fa-circle online"
-                            style="color: #AED2A6"
-                        ></i>
-                        <i
-                            class="fa fa-circle online"
-                            style="color:#DAE9DA"
-                        ></i>
                     </li>
                 </ul>
+
+                <div v-else class="text-center">
+                    No chat history
+                </div>
             </div>
             <!-- end chat-history -->
 
@@ -177,7 +144,7 @@ export default {
     computed: {
         ...mapGetters({
             users: "user/getUsers",
-            messages: "user/getMessages"
+            userMessages: "user/getMessages"
         })
     },
 
