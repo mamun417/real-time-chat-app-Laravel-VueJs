@@ -42,14 +42,15 @@ class ChatController extends Controller
         return response()->json(['user' => $user, 'messages' => $messages]);
     }
 
-    public function sendMessages(Request $request): array
+    public function sendMessage(Request $request): array
     {
         $message = auth()->user()->messages()->create([
+            'to' => $request->input('user_id'),
             'message' => $request->input('message')
         ]);
 
-        broadcast(new MessageSentEvent($message->load('user')))->toOthers();
+//        broadcast(new MessageSentEvent($message->load('user')))->toOthers();
 
-        return ['status' => 'success'];
+        return ['message' => $message];
     }
 }

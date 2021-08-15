@@ -52,7 +52,9 @@
 
                 <div class="chat-about">
                     <div class="chat-with">
-                        Chat with {{ userMessages.user.name }}
+                        Chat with
+                        {{ userMessages.user.name }}
+                        <small>({{ userMessages.user.email }})</small>
                     </div>
                     <div class="chat-num-messages">already 1 902 messages</div>
                 </div>
@@ -60,7 +62,7 @@
             </div>
             <!-- end chat-header -->
 
-            <div class="chat-history">
+            <div class="chat-history" v-chat-scroll>
                 <ul v-if="userMessages.messages.length">
                     <li
                         v-for="(message, index) in userMessages.messages"
@@ -112,10 +114,12 @@
 
             <div class="chat-message clearfix">
                 <textarea
+                    @keydown.enter.prevent="sendMessage"
+                    v-model="msg"
                     name="message-to-send"
                     id="message-to-send"
                     placeholder="Type your message"
-                    rows="3"
+                    rows="1"
                 ></textarea>
 
                 <i class="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
@@ -137,6 +141,7 @@ export default {
     name: "ChatAppComponent",
     data() {
         return {
+            msg: ""
             // users: []
         };
     },
@@ -159,6 +164,27 @@ export default {
 
         getMessages(userId) {
             this.$store.dispatch("user/getMessages", userId);
+        },
+
+        sendMessage() {
+            const msg = this.msg.trim();
+
+            if (!msg) return;
+
+            axios
+                .post("send-message", {
+                    message: msg,
+                    user_id: this.userMessages.user.id
+                })
+                .then(res => {
+                    console.log(res.data);
+                    this.msg = "";
+
+                    this.getMessages(res.data.message.to);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
     }
 };

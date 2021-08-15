@@ -9,7 +9,7 @@ Route::get('/', function () {
 Route::get('users', [\App\Http\Controllers\ChatController::class, 'getUserList']);
 Route::get('chats', [\App\Http\Controllers\ChatController::class, 'index']);
 Route::get('users/{user_id}/messages', [\App\Http\Controllers\ChatController::class, 'getMessages']);
-Route::post('messages', [\App\Http\Controllers\ChatController::class, 'sendMessages']);
+Route::post('send-message', [\App\Http\Controllers\ChatController::class, 'sendMessage']);
 
 Auth::routes();
 
