@@ -44,23 +44,7 @@
         </div>
 
         <div class="chat" v-if="userMessages.user">
-            <div class="chat-header clearfix">
-                <img
-                    src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg"
-                    alt="avatar"
-                />
-
-                <div class="chat-about">
-                    <div class="chat-with">
-                        Chat with
-                        {{ userMessages.user.name }}
-                        <small>({{ userMessages.user.email }})</small>
-                    </div>
-                    <div class="chat-num-messages">already 1 902 messages</div>
-                </div>
-                <i class="fa fa-star"></i>
-            </div>
-            <!-- end chat-header -->
+            <chat-header :user-messages="userMessages" />
 
             <div class="chat-history" v-chat-scroll>
                 <ul v-if="userMessages.messages.length">
@@ -81,6 +65,14 @@
                                 {{ message.user.name }}
                             </span>
                             <i class="fa fa-circle me"></i>
+
+                            <message-action-btn
+                                :receiver="userMessages.user"
+                                :message="message"
+                                @removedMessage="
+                                    getMessages(userMessages.user.id)
+                                "
+                            />
                         </div>
 
                         <div v-else class="message-data">
@@ -91,6 +83,14 @@
                             <span class="message-data-time">
                                 {{ $dateFormat(message.created_at) }}
                             </span>
+
+                            <message-action-btn
+                                :receiver="userMessages.user"
+                                :message="message"
+                                @removedMessage="
+                                    getMessages(userMessages.user.id)
+                                "
+                            />
                         </div>
 
                         <div
@@ -136,13 +136,15 @@
 
 <script>
 import { mapGetters } from "vuex";
+import MessageActionBtn from "./common/MessageActionBtn";
+import ChatHeader from "./common/ChatHeader";
 
 export default {
     name: "ChatAppComponent",
+    components: { ChatHeader, MessageActionBtn },
     data() {
         return {
             msg: ""
-            // users: []
         };
     },
 
@@ -180,7 +182,7 @@ export default {
                     console.log(res.data);
                     this.msg = "";
 
-                    this.getMessages(res.data.message.to);
+                    this.getMessages(this.userMessages.user.id);
                 })
                 .catch(err => {
                     console.log(err);

@@ -157,7 +157,7 @@ $gray: #92959E;
 
         .message {
             color: white;
-            padding: 5px 20px;
+            padding: 10px 20px;
             line-height: 26px;
             font-size: 16px;
             border-radius: 7px;
@@ -273,4 +273,8 @@ $gray: #92959E;
 
 .active-chat {
     background: #6A6C75;
+}
+
+.dropdown-toggle::after {
+    content: none;
 }

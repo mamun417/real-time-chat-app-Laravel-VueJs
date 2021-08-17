@@ -13,7 +13,7 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['from', 'to', 'message'];
+    protected $fillable = ['from', 'to', 'message', 'deleted_by_sender', 'deleted_by_receiver'];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
