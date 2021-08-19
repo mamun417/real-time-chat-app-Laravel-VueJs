@@ -157,6 +157,13 @@ export default {
 
     mounted() {
         this.getUsers();
+
+        Echo.private(`send-message.${this.$authUser.id}`).listen(
+            "MessageSentEvent",
+            e => {
+                this.getMessages(e.message.from);
+            }
+        );
     },
 
     methods: {
@@ -179,7 +186,6 @@ export default {
                     user_id: this.userMessages.user.id
                 })
                 .then(res => {
-                    console.log(res.data);
                     this.msg = "";
 
                     this.getMessages(this.userMessages.user.id);
