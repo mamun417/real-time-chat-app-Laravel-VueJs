@@ -9,6 +9,11 @@
                 />
                 <!--<i class="fa fa-search text-white"></i>-->
             </div>
+
+            <div class="pl-4 text-white">
+                <h5>{{ $authUser.name }}</h5>
+            </div>
+
             <ul class="list">
                 <li
                     @click="getMessages(user.id)"
@@ -113,7 +118,12 @@
             <!-- end chat-history -->
 
             <div class="chat-message clearfix">
+                <div v-if="typingInfo.user">
+                    {{ typingInfo.user.name }} is typing...
+                    <div>{{ typingInfo.message }}</div>
+                </div>
                 <textarea
+                    @keyup="typing"
                     @keydown.enter.prevent="sendMessage"
                     v-model="msg"
                     name="message-to-send"
@@ -144,6 +154,8 @@ export default {
     components: { ChatHeader, MessageActionBtn },
     data() {
         return {
+            typingTimer: "",
+            typingInfo: {},
             msg: ""
         };
     },
@@ -158,12 +170,26 @@ export default {
     mounted() {
         this.getUsers();
 
-        Echo.private(`send-message.${this.$authUser.id}`).listen(
-            "MessageSentEvent",
-            e => {
-                this.getMessages(e.message.from);
-            }
-        );
+        Echo.private(`send-message.${this.$authUser.id}`)
+            .listen("MessageSentEvent", e => {
+                console.log(e.message);
+
+                // check the selected user send message to me
+                if (e.message.from === this.userMessages.user.id) {
+                    this.getMessages(e.message.from);
+
+                    this.typingInfo = {};
+                }
+            })
+            .listenForWhisper("typing", res => {
+                clearTimeout(this.typingTimer);
+
+                this.typingInfo = res;
+
+                this.typingTimer = setTimeout(() => {
+                    this.typingInfo = {};
+                }, 1000);
+            });
     },
 
     methods: {
@@ -193,6 +219,18 @@ export default {
                 .catch(err => {
                     console.log(err);
                 });
+        },
+
+        typing() {
+            if (!this.msg) return;
+
+            Echo.private(`send-message.${this.userMessages.user.id}`).whisper(
+                "typing",
+                {
+                    user: this.$authUser,
+                    message: this.msg
+                }
+            );
         }
     }
 };

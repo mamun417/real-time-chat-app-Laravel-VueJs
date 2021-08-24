@@ -14,3 +14,5 @@ Route::post('remove-message/{message_id}', [\App\Http\Controllers\ChatController
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::post('/admins/change-password/before-login/{admin_id}', [App\Http\Controllers\AuthController::class, 'changeAdminPasswordForBeforeLogin'])->name('before-login-change-user-password');
