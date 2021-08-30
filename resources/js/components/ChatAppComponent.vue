@@ -37,11 +37,18 @@
                     <div class="about">
                         <div class="name">{{ $_.upperFirst(user.name) }}</div>
                         <div class="status">
-                            <i
-                                class="fa fa-circle"
-                                :class="index % 2 === 0 ? 'online' : 'offline'"
-                            ></i>
-                            online
+                            <div v-if="user.typing">
+                                Typing...
+                            </div>
+                            <div v-else>
+                                <i
+                                    class="fa fa-circle"
+                                    :class="
+                                        index % 2 === 0 ? 'online' : 'offline'
+                                    "
+                                ></i>
+                                online
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -50,6 +57,7 @@
 
         <div class="chat" v-if="userMessages.user">
             <chat-header :user-messages="userMessages" />
+            <pre>{{ users || {} }}</pre>
 
             <div class="chat-history" v-chat-scroll>
                 <ul v-if="userMessages.messages.length">
@@ -145,9 +153,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations, mapState } from "vuex";
 import MessageActionBtn from "./common/MessageActionBtn";
 import ChatHeader from "./common/ChatHeader";
+import { updateUserInfo } from "../store/user/mutations";
 
 export default {
     name: "ChatAppComponent",
@@ -161,13 +170,17 @@ export default {
     },
 
     computed: {
+        ...mapState({ users: "user/users" }),
+
         ...mapGetters({
-            users: "user/getUsers",
+            // users: "user/getUsers",
             userMessages: "user/getMessages"
         })
     },
 
     mounted() {
+        console.log(this.users);
+
         this.getUsers();
 
         Echo.private(`send-message.${this.$authUser.id}`)
@@ -181,18 +194,36 @@ export default {
                     this.typingInfo = {};
                 }
             })
-            .listenForWhisper("typing", res => {
+            .listenForWhisper("typing", typingUser => {
+                // if (res.user.id !== this.userMessages.user.id) return;
+
+                this.$store.commit("user/updateUserInfo", {
+                    user_id: typingUser.user.id,
+                    typing_info: typingUser
+                });
+
                 clearTimeout(this.typingTimer);
 
-                this.typingInfo = res;
+                // findTypingUser.typing = typingUser;
+
+                // this.typingInfo = res;
 
                 this.typingTimer = setTimeout(() => {
-                    this.typingInfo = {};
-                }, 1000);
+                    // this.typingInfo = {};
+                    console.log("remove typing info");
+
+                    // this.updateUserInfo(typingUser.user.id, {
+                    //     typing_info: {}
+                    // });
+                }, 2000);
             });
     },
 
     methods: {
+        ...mapMutations({
+            //
+        }),
+
         getUsers() {
             this.$store.dispatch("user/getUsers");
         },
@@ -231,6 +262,13 @@ export default {
                     message: this.msg
                 }
             );
+        }
+    },
+
+    watch: {
+        users() {
+            console.log(this.users);
+            console.log("plll");
         }
     }
 };
