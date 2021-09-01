@@ -1,4 +1,5 @@
 export function getUsers(state) {
+    console.log(state.users);
     return state.users;
 }
 

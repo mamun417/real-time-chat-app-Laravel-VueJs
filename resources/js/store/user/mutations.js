@@ -1,5 +1,9 @@
 export function storeUsers(state, users) {
-    state.users = users;
+    users.forEach(user => {
+        state.users[user.id] = { name: user.name };
+    });
+
+    // state.users = users;
 }
 
 export function storeMessages(state, messages) {

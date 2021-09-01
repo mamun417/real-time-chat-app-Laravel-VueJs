@@ -55,10 +55,10 @@
             </ul>
         </div>
 
+        <div>{{ users }}</div>
+
         <div class="chat" v-if="userMessages.user">
             <chat-header :user-messages="userMessages" />
-            <pre>{{ users || {} }}</pre>
-
             <div class="chat-history" v-chat-scroll>
                 <ul v-if="userMessages.messages.length">
                     <li
@@ -170,17 +170,13 @@ export default {
     },
 
     computed: {
-        ...mapState({ users: "user/users" }),
-
         ...mapGetters({
-            // users: "user/getUsers",
+            users: "user/getUsers",
             userMessages: "user/getMessages"
         })
     },
 
     mounted() {
-        console.log(this.users);
-
         this.getUsers();
 
         Echo.private(`send-message.${this.$authUser.id}`)
@@ -220,10 +216,6 @@ export default {
     },
 
     methods: {
-        ...mapMutations({
-            //
-        }),
-
         getUsers() {
             this.$store.dispatch("user/getUsers");
         },
@@ -262,13 +254,6 @@ export default {
                     message: this.msg
                 }
             );
-        }
-    },
-
-    watch: {
-        users() {
-            console.log(this.users);
-            console.log("plll");
         }
     }
 };
