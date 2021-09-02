@@ -1,6 +1,6 @@
-export default function() {
+export default () => {
     return {
         users: {},
         messages: []
     };
-}
+};

@@ -17,7 +17,7 @@
             <ul class="list">
                 <li
                     @click="getMessages(user.id)"
-                    v-for="(user, index) in users"
+                    v-for="(user, id) in users"
                     :key="user.id"
                     class="clearfix"
                     :class="
@@ -29,23 +29,26 @@
                     <img
                         :src="
                             `https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_${
-                                index < 9 ? '0' : ''
-                            }${index > 9 ? 10 : index + 1}.jpg`
+                                id < 9 ? '0' : ''
+                            }${id > 8 ? 10 : id}.jpg`
                         "
                         alt="avatar"
                     />
                     <div class="about">
                         <div class="name">{{ $_.upperFirst(user.name) }}</div>
                         <div class="status">
-                            <div v-if="user.typing">
+                            <div
+                                v-if="
+                                    users[user.id].typing_info &&
+                                        users[user.id].typing_info.message
+                                "
+                            >
                                 Typing...
                             </div>
                             <div v-else>
                                 <i
                                     class="fa fa-circle"
-                                    :class="
-                                        index % 2 === 0 ? 'online' : 'offline'
-                                    "
+                                    :class="id % 2 === 0 ? 'online' : 'offline'"
                                 ></i>
                                 online
                             </div>
@@ -55,9 +58,10 @@
             </ul>
         </div>
 
-        <div>{{ users }}</div>
+        <!--<div v-for="user in users">{{ user.name }}</div>-->
 
         <div class="chat" v-if="userMessages.user">
+            <!--<pre>{{ users[userMessages.user.id] }}</pre>-->
             <chat-header :user-messages="userMessages" />
             <div class="chat-history" v-chat-scroll>
                 <ul v-if="userMessages.messages.length">
@@ -163,7 +167,7 @@ export default {
     components: { ChatHeader, MessageActionBtn },
     data() {
         return {
-            typingTimer: "",
+            typingTimer: {},
             typingInfo: {},
             msg: ""
         };
@@ -190,27 +194,23 @@ export default {
                     this.typingInfo = {};
                 }
             })
-            .listenForWhisper("typing", typingUser => {
+            .listenForWhisper("typing", typingInfo => {
                 // if (res.user.id !== this.userMessages.user.id) return;
 
                 this.$store.commit("user/updateUserInfo", {
-                    user_id: typingUser.user.id,
-                    typing_info: typingUser
+                    user_id: typingInfo.user_id,
+                    typing_info: typingInfo
                 });
 
-                clearTimeout(this.typingTimer);
+                clearTimeout(this.typingTimer.user_id);
 
-                // findTypingUser.typing = typingUser;
-
-                // this.typingInfo = res;
-
-                this.typingTimer = setTimeout(() => {
-                    // this.typingInfo = {};
+                this.typingTimer.user_id = setTimeout(() => {
                     console.log("remove typing info");
 
-                    // this.updateUserInfo(typingUser.user.id, {
-                    //     typing_info: {}
-                    // });
+                    this.$store.commit("user/updateUserInfo", {
+                        user_id: typingInfo.user_id,
+                        typing_info: {}
+                    });
                 }, 2000);
             });
     },
@@ -250,7 +250,7 @@ export default {
             Echo.private(`send-message.${this.userMessages.user.id}`).whisper(
                 "typing",
                 {
-                    user: this.$authUser,
+                    user_id: this.$authUser.id,
                     message: this.msg
                 }
             );
