@@ -185,8 +185,6 @@ export default {
 
         Echo.private(`send-message.${this.$authUser.id}`)
             .listen("MessageSentEvent", e => {
-                console.log(e.message);
-
                 // check the selected user send message to me
                 if (e.message.from === this.userMessages.user.id) {
                     this.getMessages(e.message.from);
@@ -195,20 +193,18 @@ export default {
                 }
             })
             .listenForWhisper("typing", typingInfo => {
-                // if (res.user.id !== this.userMessages.user.id) return;
+                const userId = typingInfo.user_id;
 
                 this.$store.commit("user/updateUserInfo", {
-                    user_id: typingInfo.user_id,
+                    user_id: userId,
                     typing_info: typingInfo
                 });
 
-                clearTimeout(this.typingTimer.user_id);
+                clearTimeout(this.typingTimer[userId]);
 
-                this.typingTimer.user_id = setTimeout(() => {
-                    console.log("remove typing info");
-
+                this.typingTimer[userId] = setTimeout(() => {
                     this.$store.commit("user/updateUserInfo", {
-                        user_id: typingInfo.user_id,
+                        user_id: userId,
                         typing_info: {}
                     });
                 }, 2000);
