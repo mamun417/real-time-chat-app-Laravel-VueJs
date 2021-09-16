@@ -127,35 +127,24 @@ export default {
     mounted() {
         Echo.join("chat")
             .here(users => {
-                console.log({ here: users });
-
-                this.$store.commit("user/updateUserInfo", {
-                    user_id: users[0].id,
-                    online_status: true
-                });
-
-                // Object.keys(users).forEach(key => {
-                //     const user = users[key];
-                //
-                //     this.$store.commit("user/updateUserInfo", {
-                //         user_id: user.id,
-                //         online_status: true
-                //     });
-                // });
+                users
+                    .filter(user => user.id !== this.$authUser.id)
+                    .forEach(user => {
+                        this.$store.commit("user/updateUserInfo", {
+                            user,
+                            online_status: true
+                        });
+                    });
             })
             .joining(user => {
-                console.log({ join: user });
-
                 this.$store.commit("user/updateUserInfo", {
-                    user_id: user.id,
+                    user,
                     online_status: true
                 });
             })
             .leaving(user => {
-                console.log({ leave: user.name });
-
                 this.$store.commit("user/updateUserInfo", {
-                    user_id: user.id,
+                    user,
                     online_status: false
                 });
             })
@@ -166,11 +155,14 @@ export default {
         Echo.private(`send-message.${this.$authUser.id}`)
             .listen("MessageSentEvent", e => {
                 // check the selected user send message to me
-                if (e.message.from === this.userMessages.user.id) {
+                if (
+                    this.userMessages.user &&
+                    e.message.from === this.userMessages.user.id
+                ) {
                     this.getMessages(e.message.from);
 
                     this.$store.commit("user/updateUserInfo", {
-                        user_id: this.userMessages.user.id,
+                        user: this.userMessages.user,
                         typing_info: {}
                     });
                 }
@@ -179,7 +171,7 @@ export default {
                 const userId = typingInfo.user.id;
 
                 this.$store.commit("user/updateUserInfo", {
-                    user_id: userId,
+                    user: typingInfo.user,
                     typing_info: typingInfo
                 });
 
@@ -187,7 +179,7 @@ export default {
 
                 this.typingTimer[userId] = setTimeout(() => {
                     this.$store.commit("user/updateUserInfo", {
-                        user_id: userId,
+                        user: typingInfo.user,
                         typing_info: {}
                     });
                 }, 2000);

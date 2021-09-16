@@ -35,15 +35,15 @@
                 <div class="about">
                     <div class="name">{{ $_.upperFirst(user.name) }}</div>
                     <div class="status">
-                        <pre>{{ users[user.id] }}</pre>
-                        <!--<div-->
-                        <!--    v-if="-->
-                        <!--        users[user.id].typing_info &&-->
-                        <!--            users[user.id].typing_info.message-->
-                        <!--    "-->
-                        <!--&gt;-->
-                        <!--    Typing...-->
-                        <!--</div>-->
+                        <div
+                            v-if="
+                                users[user.id] &&
+                                    users[user.id].typing_info &&
+                                    users[user.id].typing_info.message
+                            "
+                        >
+                            Typing...
+                        </div>
                         <div>
                             <i
                                 class="fa fa-circle"
@@ -78,7 +78,9 @@ export default {
 
     methods: {
         getUsers() {
-            this.$store.dispatch("user/getUsers");
+            setTimeout(() => {
+                this.$store.dispatch("user/getUsers");
+            }, 3000);
         },
 
         getMessages(userId) {
