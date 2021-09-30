@@ -15,6 +15,7 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('conversation_id');
             $table->bigInteger('from')->comment('own id');
             $table->bigInteger('to')->comment('other id');
             $table->text('message');

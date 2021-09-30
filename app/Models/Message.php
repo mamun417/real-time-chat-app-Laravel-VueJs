@@ -19,4 +19,9 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'from');
     }
+
+    public function conversation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Conversation::class);
+    }
 }

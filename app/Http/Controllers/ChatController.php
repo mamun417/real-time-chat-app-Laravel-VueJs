@@ -14,13 +14,6 @@ class ChatController extends Controller
         $this->middleware('auth');
     }
 
-    public function getUserList(): \Illuminate\Http\JsonResponse
-    {
-        $users = User::latest()->where('id', '!=', auth()->id())->get();
-
-        return response()->json($users);
-    }
-
     public function getMessages($user_id): \Illuminate\Http\JsonResponse
     {
         $user = User::findOrFail($user_id);

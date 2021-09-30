@@ -78,13 +78,18 @@ export default {
 
     methods: {
         getUsers() {
-            setTimeout(() => {
-                this.$store.dispatch("user/getUsers");
-            }, 3000);
+            // setTimeout(() => {
+            this.$store.dispatch("user/getUsers");
+            // }, 3000);
         },
 
         getMessages(userId) {
             this.$store.dispatch("user/getMessages", userId);
+
+            this.$router.push({
+                name: "chats",
+                params: { conv_id: userId }
+            });
         }
     }
 };

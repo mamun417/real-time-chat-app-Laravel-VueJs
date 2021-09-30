@@ -11,11 +11,14 @@ Vue.prototype.$authUser = JSON.parse(
     document.querySelector("meta[name='auth-user']").getAttribute("content")
 );
 
-Vue.component("main-app", require("./components/MainComponent.vue").default);
+Vue.component("app", require("./App.vue").default);
 
 import store from "./store/index";
+import router from "./router/index";
+import "./axios";
 
 const app = new Vue({
     store,
+    router,
     el: "#app"
 });
