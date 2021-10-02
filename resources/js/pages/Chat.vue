@@ -1,7 +1,7 @@
 <template>
     <div>
         <chat-header :user-messages="userMessages" />
-        <messages />
+        <messages :key="$route.params.conv_id" />
     </div>
 </template>
 

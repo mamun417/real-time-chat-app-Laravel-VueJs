@@ -10,12 +10,12 @@ const routes = [
                 component: () => import("../pages/Chat.vue")
             }
         ]
-    }
+    },
 
-    // {
-    //     path: "*",
-    //     component: () => import("../views/error/404")
-    // }
+    {
+        path: "*",
+        component: () => import("../pages/404.vue")
+    }
 ];
 
 export default routes;

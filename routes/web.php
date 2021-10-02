@@ -22,4 +22,4 @@ Route::post('conversations', [\App\Http\Controllers\ConversationController::clas
 Route::get('conversations/{id}/messages', [\App\Http\Controllers\ConversationController::class, 'getMessages']);
 
 Route::get('{path}', [\App\Http\Controllers\HomeController::class, 'index'])
-    ->where('path', '[A-Za-z0-9]+');
+    ->where('path', '.*');

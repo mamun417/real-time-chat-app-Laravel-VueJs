@@ -72,17 +72,7 @@ export default {
         })
     },
 
-    mounted() {
-        this.getUsers();
-    },
-
     methods: {
-        getUsers() {
-            // setTimeout(() => {
-            this.$store.dispatch("user/getUsers");
-            // }, 3000);
-        },
-
         getMessages(userId) {
             this.$store.dispatch("user/getMessages", userId);
 

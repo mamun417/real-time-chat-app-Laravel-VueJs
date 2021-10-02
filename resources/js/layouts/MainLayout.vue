@@ -1,9 +1,6 @@
 <template>
-    <div class="container-chat clearfix">
-        <!--left bar-->
-        <div class="chat" v-if="userMessages.user">
-            <router-view />
-        </div>
+    <div class="chat" v-if="userMessages.user">
+        <router-view />
     </div>
 </template>
 
@@ -31,6 +28,8 @@ export default {
     },
 
     mounted() {
+        this.getUsers();
+
         Echo.join("chat")
             .here(users => {
                 users
@@ -90,6 +89,14 @@ export default {
                     });
                 }, 2000);
             });
+    },
+
+    methods: {
+        getUsers() {
+            // setTimeout(() => {
+            this.$store.dispatch("user/getUsers");
+            // }, 3000);
+        }
     }
 };
 </script>
